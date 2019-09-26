@@ -1,0 +1,25 @@
+;; shadow-cljs configuration
+{:deps     {:aliases [:cljs]}
+
+ :nrepl    {:port 3333}
+
+ :npm-deps {:rot-js "2.1.1"}
+
+ :dev-http {8080 "target/"}
+
+ :builds   {:crawl {:output-dir "target/",
+                    :asset-path ".",
+                    :target     :browser,
+                    :modules    {:main {:entries [proto-crawl.main],
+                                        :init-fn proto-crawl.main/main}},
+                    :devtools   {:preloads [day8.re-frame-10x.preload]}
+                    :dev        {:closure-defines
+                                 {re_frame.trace.trace_enabled?                true
+                                  "re_frame.trace.trace_enabled_QMARK_"        true
+                                  day8.re-frame.tracing.trace-enabled?         true
+                                  "day8.re-frame.tracing.trace-enabled_QMARK_" true
+                                  goog.DEBUG                                   true}}
+                    :release    {:output-dir "production-target"}}}}
+
+
+

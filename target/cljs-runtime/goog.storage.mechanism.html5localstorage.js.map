@@ -1,0 +1,8 @@
+{
+"version":3,
+"file":"goog.storage.mechanism.html5localstorage.js",
+"lineCount":17,
+"mappings":"AAqBAA,IAAAC,QAAA,CAAa,0CAAb,CAAA;AAEAD,IAAAE,QAAA,CAAa,wCAAb,CAAA;AAWA;;;;;AAAAF,IAAAG,QAAAC,UAAAC,kBAAA,GAA2CC,QAAQ,EAAG;AACpD,MAAIH,UAAU,IAAd;AAEA,KAAI;AAGFA,WAAA,GAAUI,MAAAC,aAAV,IAAiC,IAAjC;AAHE,GAIF,QAAOC,CAAP,CAAU;;AAEZT,MAAAG,QAAAC,UAAAC,kBAAAK,KAAA,CAA8C,IAA9C,EAAoD,aAApD,EAAmEP,OAAnE,CAAA;AAToD,CAAtD;AAWAH,IAAAW,SAAA,CACIX,IAAAG,QAAAC,UAAAC,kBADJ,EAEIL,IAAAG,QAAAC,UAAAQ,gBAFJ,CAAA;;",
+"sources":["goog/storage/mechanism/html5localstorage.js"],
+"names":["goog","provide","require","storage","mechanism","HTML5LocalStorage","goog.storage.mechanism.HTML5LocalStorage","window","localStorage","e","base","inherits","HTML5WebStorage"]
+}
