@@ -19,3 +19,9 @@
         (controls/take-move-input db key-pressed))
       ;; finally, if it wasn't a valid input, drop it.
       db)))
+
+(rf/reg-event-db
+  :alt-timeout
+  (fn-traced [db _]
+    (update-in db [:metadata :show-alt?] not)))
+

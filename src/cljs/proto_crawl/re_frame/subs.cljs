@@ -36,3 +36,8 @@
   :entities
   (fn [db _]
     (get-in db [:entities])))
+
+(rf/reg-sub
+  :show-alt?
+  (fn [db _]
+    (get-in db [:metadata :show-alt?])))

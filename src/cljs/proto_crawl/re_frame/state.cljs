@@ -12,6 +12,7 @@
   {:entities    [(ents/cleaner-bot)]
    :current-map (map-loader/loader :feature)
    :metadata    {:map-config    {}
+                 :show-alt?     false
                  :viewport-size 12}
    :player      {:orientation (cube/->orient 1 5 4)
                  :cube        {1 "A"

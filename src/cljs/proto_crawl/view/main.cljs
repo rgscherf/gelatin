@@ -38,32 +38,39 @@
   [x y]
   (str "-" (* x 16) "px -" (* y 24) "px"))
 
+
+;; TODO these calculations don't work correctly when the screen is really narrow.
+;; I think it has to do with current sizing of the game grid
+;; (since changing to 16x24 tiles).
 (defn tile-coords->pct-coords
   "Convert coordinates of sprite sheet tiles (e.g. 0th from left, 2nd from top)
   To percentage units, e.g. begin rendering from left 0% and top 20% of image."
-  [x y]
-  (let [pct-unit (/ 100 16)]
-    (str (* x 6.67)
-         "% "
-         (* y 10)
-         "%")))
+  [[x y]]
+  (str (* x 6.67)
+       "% "
+       (* y 10)
+       "%"))
+
+
 
 (defn mk-terrain
-  [type]
-  (let [[tx ty] (match type
-                       :water [2 1]
-                       :door [7 2]
-                       :floor [10 0]
-                       :wall [2 0]
-                       :void [2 1]
-                       :else [2 1])]
+  "Draw the terrain image. Handles animating between normal and alt art."
+  [tile]
+  (let [show-alt?     @(rf/subscribe [:show-alt?])
+        animate?      (:animate? tile)
+        art           (:tile-art tile)
+        alt           (:tile-art-alt tile)
+        image-to-draw (if show-alt?
+                        (if animate? alt art)
+                        art)]
     [:div {:style {:width               "100%"
                    :height              "100%"
-                   :background-position (tile-coords->pct-coords tx ty) ;"-128px -24px"
+                   :background-position (tile-coords->pct-coords image-to-draw)
                    :image-rendering     "pixelated"
+                   :opacity             (str (:opacity tile))
                    :background-size     "calc(100% * 16)"
                    :background-color    "black"
-                   :background-image    "url(../resources/terrain.png)"
+                   :background-image    (str "url(" (:image-url tile) ")")
                    :background-repeat   "no-repeat"}}]))
 
 
@@ -178,8 +185,8 @@
 (defn sidebar
   []
   [:div {:id    "game__sidebar"
-         :style {:grid-column      "1 / span 2"
-                 :grid-row         "1 / span 6"
+         :style {:grid-column      "1 / span 4"
+                 :grid-row         "1 / span 12"
                  :display          "flex"
                  :flex-direction   "column"
                  :border           "1px solid white"
@@ -197,10 +204,10 @@
    [:div {:id    "game-area"
           :style {:display               "grid"
                   :height                "96vmin"
-                  :width                 "128vmin"
+                  :width                 "96vmin"
                   :color                 "green"
-                  :grid-template-columns "repeat(8, 1fr)"
-                  :grid-template-rows    "repeat(6, 1fr)"
+                  :grid-template-columns "repeat(12, 1fr)"
+                  :grid-template-rows    "repeat(12, 1fr)"
                   :margin                "0px"}}
 
     [play-area]

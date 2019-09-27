@@ -1,8 +1,0 @@
-{
-"version":3,
-"file":"goog.storage.mechanism.mechanism.js",
-"lineCount":18,
-"mappings":"AAoBAA,IAAAC,QAAA,CAAa,kCAAb,CAAA;AAUA,4BAAAD,IAAAE,QAAAC,UAAAC,UAAA,GAAmCC,QAAQ,EAAG;CAA9C;AASA;;;;AAAAL,IAAAE,QAAAC,UAAAC,UAAAE,UAAAC,IAAA,GAAiDP,IAAAQ,eAAjD;AASA;;;;AAAAR,IAAAE,QAAAC,UAAAC,UAAAE,UAAAG,IAAA,GAAiDT,IAAAQ,eAAjD;AAQA;;;AAAAR,IAAAE,QAAAC,UAAAC,UAAAE,UAAAI,OAAA,GAAoDV,IAAAQ,eAApD;;",
-"sources":["goog/storage/mechanism/mechanism.js"],
-"names":["goog","provide","storage","mechanism","Mechanism","goog.storage.mechanism.Mechanism","prototype","set","abstractMethod","get","remove"]
-}

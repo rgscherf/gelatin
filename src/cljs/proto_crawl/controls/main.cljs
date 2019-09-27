@@ -22,12 +22,7 @@
 
 (defn player-can-pass-tile?
   [game-map candidate-pos]
-  (match (get game-map candidate-pos)
-         :floor true
-         :wall false
-         :void false
-         :door true
-         :water false))
+  (:player-passable? (get game-map candidate-pos)))
 
 (defn tile-free-for-player?
   "Can the player move into the candidate tile?

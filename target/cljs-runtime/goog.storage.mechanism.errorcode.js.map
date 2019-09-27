@@ -1,8 +1,0 @@
-{
-"version":3,
-"file":"goog.storage.mechanism.errorcode.js",
-"lineCount":3,
-"mappings":"AAmBAA,IAAAC,QAAA,CAAa,kCAAb,CAAA;AAOA,sBAAAD,IAAAE,QAAAC,UAAAC,UAAA,GAAmC,CACjCC,cAAe,kDADkB,EAEjCC,eAAgB,mCAFiB,EAGjCC,iBAAkB,qCAHe,CAAnC;;",
-"sources":["goog/storage/mechanism/errorcode.js"],
-"names":["goog","provide","storage","mechanism","ErrorCode","INVALID_VALUE","QUOTA_EXCEEDED","STORAGE_DISABLED"]
-}

@@ -23,10 +23,14 @@
   [key-event]
   (rf/dispatch [:key-down (.-key key-event)]))
 
+(defn on-alt-timeout
+  []
+  (rf/dispatch [:alt-timeout]))
+
 (defn add-global-event-listeners
   []
+  (.setInterval js/window on-alt-timeout 1000)
   (.addEventListener js/document "keydown" on-game-keydown))
-
 
 (defn main
   []
