@@ -5,7 +5,27 @@
     [cljs.spec.alpha :as s]
     [re-frame.core :as rf]
     [proto-crawl.style.main :as style]
+    [proto-crawl.specs.renderable :as renderable]
+    [proto-crawl.specs.pathable :as p]
     [proto-crawl.entities.utils :as entity-utils]))
+
+(def resource-location "../resources/")
+(def image-measurements
+  {"terrain.png"  {:xrows           16
+                   :yrows           11
+                   ;; background-size should = number of tiles on x axis
+                   ;; used to make sprite sizes responsive
+                   :background-size 16}
+   "Monsters.png" {:xrows           19
+                   :yrows           26
+                   :background-size 19}})
+
+(defn tilenum
+  "Retrieve metadata about a given background image so sprites from that
+  image can be displayed and sized."
+  [tile-obj key]
+  (let [image-name (get tile-obj ::renderable/image-url)]
+    (get-in image-measurements [image-name key])))
 
 
 (defn all-coords
@@ -39,38 +59,45 @@
   (str "-" (* x 16) "px -" (* y 24) "px"))
 
 
-;; TODO these calculations don't work correctly when the screen is really narrow.
-;; I think it has to do with current sizing of the game grid
-;; (since changing to 16x24 tiles).
 (defn tile-coords->pct-coords
   "Convert coordinates of sprite sheet tiles (e.g. 0th from left, 2nd from top)
-  To percentage units, e.g. begin rendering from left 0% and top 20% of image."
-  [[x y]]
-  (str (* x 6.67)
-       "% "
-       (* y 10)
-       "%"))
+  To percentage units, e.g. begin rendering from left 0% and top 20% of image.
+  This calculation is based on the # rows/columns of sprites in the image,
+  so we also need metadata about the image file (given by the tilenum map)."
+  [tile [x y]]
+  (let [xmult (/ 100 (dec (tilenum tile :xrows)))
+        ymult (/ 100 (dec (tilenum tile :yrows)))]
+    (str (* x xmult)
+         "% "
+         (* y ymult)
+         "%")))
 
-
+(* 6.67 16)
+(/ 100 16)
 
 (defn mk-terrain
   "Draw the terrain image. Handles animating between normal and alt art."
   [tile]
   (let [show-alt?     @(rf/subscribe [:show-alt?])
-        animate?      (:animate? tile)
-        art           (:tile-art tile)
-        alt           (:tile-art-alt tile)
+        animate?      (::renderable/animate? tile)
+        art           (::renderable/tile-art tile)
+        alt           (::renderable/tile-art-alt tile)
         image-to-draw (if show-alt?
                         (if animate? alt art)
                         art)]
     [:div {:style {:width               "100%"
                    :height              "100%"
-                   :background-position (tile-coords->pct-coords image-to-draw)
+                   :background-position (tile-coords->pct-coords tile image-to-draw)
                    :image-rendering     "pixelated"
                    :opacity             (str (:opacity tile))
-                   :background-size     "calc(100% * 16)"
+                   :background-size     (str "calc(100% *"
+                                             (tilenum tile :background-size)
+                                             ")")
                    :background-color    "black"
-                   :background-image    (str "url(" (:image-url tile) ")")
+                   :background-image    (str "url("
+                                             (str resource-location
+                                                  (get tile ::renderable/image-url))
+                                             ")")
                    :background-repeat   "no-repeat"}}]))
 
 
@@ -82,7 +109,7 @@
         entities      @(rf/subscribe [:entities])
         tile-contents (quick-tile-contents current-map
                                            entities
-                                           (:position @(rf/subscribe [:player]))
+                                           (::p/pos @(rf/subscribe [:player]))
                                            [x y])]
     [:div {:style {:max-height      "100%"
                    :font-size       "2vmin"
@@ -104,7 +131,8 @@
              :monster (let [ent (entity-utils/entity-at entities [x y])
                             g   (:glyph ent)
                             i   (:identifier ent)]
-                        (str g "(" i ")"))
+                        (mk-terrain ent)
+                        #_(str g "(" i ")"))
              :else (mk-terrain tile-contents))]]))
 
 (defn play-area

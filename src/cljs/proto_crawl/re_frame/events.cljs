@@ -3,6 +3,7 @@
   (:require
     [re-frame.core :as rf]
     [day8.re-frame.tracing :refer-macros [fn-traced]]
+    [proto-crawl.entities.main :as entities]
     [proto-crawl.controls.main :as controls]))
 
 (rf/reg-event-db
@@ -16,7 +17,10 @@
     (or
       ;; check to see if we have movement input
       (if (get controls/movement-key-names key-pressed)
-        (controls/take-move-input db key-pressed))
+        (->> [true db]
+             (controls/take-move-input key-pressed)
+             entities/move-entities
+             second))
       ;; finally, if it wasn't a valid input, drop it.
       db)))
 

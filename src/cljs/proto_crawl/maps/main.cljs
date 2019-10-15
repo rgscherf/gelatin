@@ -1,33 +1,44 @@
 (ns proto-crawl.maps.main
-  (:require [proto-crawl.maps.tiles :as tiles]))
+  (:require
+    [proto-crawl.specs.pathable :as p]
+    [proto-crawl.specs.renderable :as r]
+    [cljs.spec.alpha :as s]
+    [proto-crawl.maps.tiles :as tiles]))
+
+[".........."
+ ".........."
+ ".........."
+ ".........."
+ ".........."
+ ".........."
+ ".........."
+ ".........."
+ ".........."
+ ".........."]
 
 (def basic-maps
-  {:feature ["00123DD67890"
-             "0......#***0"
-             "1####..#***1"
-             "2..##...#**2"
-             "3........##3"
-             "D..www.....D"
-             "D..wwww....D"
-             "6.....b....6"
-             "7wwbwwwww..7"
-             "8...ww.....9"
-             "9..........9"
-             "00123DD67890"]
-   :blank   ["001234567890"
-             "0..........0"
-             "1..........1"
-             "2..........2"
-             "3..........3"
-             "4..........4"
-             "5..........5"
-             "6..........6"
-             "7..........7"
-             "8..........9"
-             "9..........9"
-             "001234567890"]})
+  {:feature       ["**********"
+                   "#######***"
+                   ".......#**"
+                   "........##"
+                   "..www....."
+                   "..wwww...."
+                   ".....b...."
+                   "wwbwwwww.."
+                   "...ww....."
+                   ".........."]
+   :straight-shot ["wwwwwww###"
+                   "wbbbwww###"
+                   "wbbbbwwwww"
+                   "wwwbbbbwww"
+                   "..wbwwbb.."
+                   "..bbwwbw.."
+                   "wwwbbbbwww"
+                   "wwwwwbbbbw"
+                   "###wwwbbbw"
+                   "###wwwwwww"]})
 
-(defn trimmed-levelstr->levelmap
+(defn level-str->glyph-positions
   "Take a coll of colls and turn it into a map of
   [col-idx row-idx] => contents-of-intersection"
   [trimmed]
@@ -47,44 +58,50 @@
        (drop 1)
        (drop-last)))
 
-(defn str-table->data-table
+(defn glyph-positions->tile-positions
   [data-table]
   (->> data-table
        (map (fn [[k v]] {k (get (tiles/glyph-table) v)}))
        (reduce merge)))
 
-(defn add-outer-walls
+(defn tile-positions->add-outer-walls
   [tilemap]
   (reduce (fn [acc x] (assoc acc x (get (tiles/glyph-table) "#")))
           tilemap
           (reduce concat
-                  [(map #(vector -1 %) (range -1 11)) ;; left bar
-                   (map #(vector 10 %) (range -1 11)) ;; right bar
-                   (map #(vector % -1) (range -1 11)) ;; top bar
-                   (map #(vector % 10) (range -1 11))]))) ;; bottom bar
+                  [(map #(vector -1 %) (range -1 11))       ;; left bar
+                   (map #(vector 10 %) (range -1 11))       ;; right bar
+                   (map #(vector % -1) (range -1 11))       ;; top bar
+                   (map #(vector % 10) (range -1 11))])))   ;; bottom bar
 
-(defn add-doors
+(defn tile-positions->add-doors
   [tilemap]
   (reduce (fn [acc x] (assoc acc x (get (tiles/glyph-table) "d")))
           tilemap
           [[-1 4] [-1 5] [10 4] [10 5]]))
 
+(defn tile-positions->add-pos-to-tile-maps
+  "Add the tile's position to each tile in the tilemap."
+  [tilemap]
+  (reduce-kv (fn [acc k v]
+               (assoc acc k (assoc v ::p/pos k)))
+             {}
+             tilemap))
+
+(def tilespec (s/and ::r/renderable ::p/pathable))
+
 (defn str->level
   "Take a level defined by its visual representation and
   convert to data."
-  [levelstr]
-  (->> levelstr
-       trim-sides
-       (map trim-sides)
-       trimmed-levelstr->levelmap
-       str-table->data-table
-       add-outer-walls
-       add-doors))
+  [level-str]
+  {:post [#(s/assert tilespec %)]}
+  (->> level-str
+       level-str->glyph-positions
+       glyph-positions->tile-positions
+       tile-positions->add-outer-walls
+       tile-positions->add-doors
+       tile-positions->add-pos-to-tile-maps))
 
-(comment
-
-  (count (str->level (get basic-maps :blank)))
-  (str->level (get basic-maps :blank)))
 
 (defn loader
   [map-key]

@@ -29,7 +29,7 @@
 
 (defn add-global-event-listeners
   []
-  (.setInterval js/window on-alt-timeout 1000)
+  (.setInterval js/window on-alt-timeout 750)
   (.addEventListener js/document "keydown" on-game-keydown))
 
 (defn main
