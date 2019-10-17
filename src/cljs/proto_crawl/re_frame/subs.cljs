@@ -12,11 +12,6 @@
   (fn [db _]
     (get-in db [:player :orientation])))
 
-;(rf/reg-sub
-;  :map-dimensions
-;  (fn [db _]
-;    (get-in db [:metadata :map-config :map-dimensions])))
-
 (rf/reg-sub
   :current-map
   (fn [db _]

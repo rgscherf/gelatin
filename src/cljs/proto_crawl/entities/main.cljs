@@ -16,7 +16,7 @@
   If not success?, return given db.
   Each entity returns an event-result, so we return its second as the new db."
   [[success? db :as evt-res]]
-  {:pre [(s/assert ::state/event-result evt-res)]
+  {:pre  [(s/assert ::state/event-result evt-res)]
    :post [(s/assert ::state/event-result %)]}
   (if success?
     [true (let [ents (:entities db)]
@@ -61,6 +61,7 @@
    ::r/image-url    "Monsters.png"
    ::r/tile-art     [1 4]
    ::r/tile-art-alt [1 5]
+   ::r/type         :red
    ::p/passable?    false
    ::p/pos          pos
    ::p/type         :entity})

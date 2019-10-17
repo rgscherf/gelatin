@@ -4,6 +4,7 @@
 (s/def ::renderable
   (s/and (s/keys :req [::tile-art
                        ::animate?
+                       ::type
                        ::image-url]
                  :opt [::tile-art-alt])
          ;; ensure that we have alt tile art when animate? is set
@@ -15,6 +16,7 @@
 (s/def ::tile-art-alt ::tile-art)
 (s/def ::animate? boolean?)
 (s/def ::image-url string?)
+(s/def ::type keyword?)
 
 (comment
   (s/explain ::renderable
