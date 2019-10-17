@@ -77,6 +77,10 @@
                  :color            "white"
                  :background-color "black"}}
    [roll-preview]
-   [:div "hi"]])
+   (let [player @(rf/subscribe [:player])]
+     [:div [:div (str "HP: " (:hp player))]
+           [:div (str "AP: " (:ap player))]
+           [:div (str "Targeting? " (:target-mode? player))]
+           [:div (str "Target pos " (:target-pos player))]])])
 
 (sidebar)

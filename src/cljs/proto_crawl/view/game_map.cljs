@@ -106,6 +106,8 @@
     [:div {:style {:display        "flex"
                    :height         "100%"
                    :width          "100%"
+                   :justify-content "center"
+                   :align-items "center"
                    :flex-direction "column"}}
      [:div {:style {:position      "relative"
                     :width         "95%"
@@ -114,9 +116,9 @@
                     :height        "62.7%"}}
       [draw-renderable (get current-cube
                             (:t @(rf/subscribe [:player-orientation])))]]
-     [:div
-      {:style {:font-size "1.7vmin"}}
-      (str "HP " (:hp player))]]))
+     #_[:div
+        {:style {:font-size "1.7vmin"}}
+        (str "HP " (:hp player))]]))
 
 (defn single-tile
   [[y x]]
@@ -137,6 +139,10 @@
                     :align-items     "center"
                     :justify-content "center"
                     :position        "relative"
+                    :outline (if (and (:target-mode? player)
+                                      (= [x y] (:target-pos player)))
+                                "dashed red 3px"
+                                nil)
                     :width           "100%"}}
       [draw-renderable terrain-tile]
       (match (::p/type (get collision [x y]))

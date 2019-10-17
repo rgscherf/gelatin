@@ -8,6 +8,7 @@
     [proto-crawl.rot-js.rng :as rng]
     [proto-crawl.specs.pathable :as p]
     [proto-crawl.specs.renderable :as r]
+    [proto-crawl.specs.game-state :as state]
     [proto-crawl.specs.player :as player]
     [proto-crawl.specs.game-state :as game]
     [proto-crawl.maps.main :as map-loader]))
@@ -52,17 +53,30 @@
 (defn init-player
   []
   {:post [(s/assert ::player/player %)]}
-  {:orientation  (cube/->orient 1 5 4)
-   :cube         {1 (:hunker skills)
-                  2 (:regenerate skills)
-                  3 (:twin skills)
-                  4 (:snipe skills)
-                  5 (:word skills)
-                  6 (:slash skills)}
-   ::p/passable? false
-   ::p/type      :player
-   :hp           3
-   ::p/pos       (random-player-pos)})
+  (let [p (random-player-pos)]
+    {:orientation  (cube/->orient 1 5 4)
+     :cube         {1 (:hunker skills)
+                    2 (:regenerate skills)
+                    3 (:twin skills)
+                    4 (:snipe skills)
+                    5 (:word skills)
+                    6 (:slash skills)}
+     ::p/passable? false
+     ::p/type      :player
+     :hp           3
+     :ap           2
+     :target-mode? false
+     :target-pos   p
+     ::p/pos       p}))
+
+(defn reset-player-turn
+  [[success? db]]
+  {:pre  [(s/assert ::state/event-result [success? db])]
+   :post [(s/assert ::state/event-result %)]}
+  [true (-> db
+            (assoc-in [:player :ap] 2)
+            (assoc-in [:player :target-mode?] false))])
+
 
 (defn add-entities
   [num-enemies level]
