@@ -10,8 +10,8 @@
  :builds   {:gelatin {:output-dir "target/",
                       :asset-path ".",
                       :target     :browser,
-                      :modules    {:main {:entries [proto-crawl.main],
-                                          :init-fn proto-crawl.main/main}},
+                      :modules    {:main {:entries [gelatin.main],
+                                          :init-fn gelatin.main/main}},
                       :devtools   {:preloads [day8.re-frame-10x.preload]}
                       :dev        {:closure-defines
                                    {re_frame.trace.trace_enabled?                true

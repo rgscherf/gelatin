@@ -5,6 +5,7 @@
     [day8.re-frame.tracing :refer-macros [fn-traced]]
     [gelatin.entities.main :as entities]
     [gelatin.re-frame.state :as state]
+    [gelatin.controls.keys :as control-keys]
     [gelatin.controls.main :as controls]))
 
 (rf/reg-event-db
@@ -23,7 +24,7 @@
 (rf/reg-event-fx
   :key-down
   (fn [{:keys [db]} [_ key-pressed]]
-    (if (get controls/input-key-names key-pressed)
+    (if (get control-keys/input-key-names key-pressed)
       (let [[_ updated-with-move] (controls/take-player-input key-pressed [true db])]
         {:db       updated-with-move
          :dispatch (if (>= 0 (get-in updated-with-move [:player :ap]))
