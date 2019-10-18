@@ -1,18 +1,6 @@
-# PROTO-CRAWL
+# GELATIN
 
-A ClojureScript roguelike template.
-
-## Proto-Crawl features
-
-- Interface to rot.js dungeon generation
-- Interface to rot.js pathfinding
-- Well-documented data structures for managing game state
-- Framework for player actions, enemy actions, animations, etc
-- Basic rendering with:
-    - Sprite characters
-    - Map viewport
-    - UI
-    - ... all in a responsive context.
+A tactical cubic roguelike, written in ClojureScript.
 
 ## Connecting to a repl
 
@@ -54,14 +42,3 @@ https://codepen.io/sosuke/pen/Pjoqqp
 Remember to prepend the filter with "brightness(0) saturate(100%)" if not
 starting from white.
 
-### Working with the sprite pack
-
-Imagemagick command to recolour sheet from white-on-transparent to green-on-transparent
-
-mogrify -path ./edited -format png -fill "#00FF00" -opaque "#FFFFFF" Monsters.png
-(source: http://www.imagemagick.org/discourse-server/viewtopic.php?t=17897)
-
-Imagemagick command to split out 16x24 sprites (the extra 8 pixels are vertical
-padding):
-
-convert edited/Monsters.png -crop 16x24 edited/temp_sprite%03d.png
