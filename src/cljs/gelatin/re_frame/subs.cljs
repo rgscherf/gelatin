@@ -36,3 +36,8 @@
   :show-alt?
   (fn [db _]
     (get-in db [:metadata :show-alt?])))
+
+(rf/reg-sub
+  :messages
+  (fn [db _]
+    (get db :messages)))

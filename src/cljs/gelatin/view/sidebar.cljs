@@ -77,10 +77,15 @@
                  :color            "white"
                  :background-color "black"}}
    [roll-preview]
-   (let [player @(rf/subscribe [:player])]
-     [:div [:div (str "HP: " (:hp player))]
-           [:div (str "AP: " (:ap player))]
-           [:div (str "Targeting? " (:target-mode? player))]
-           [:div (str "Target pos " (:target-pos player))]])])
+   (let [player @(rf/subscribe [:player])
+         messages @(rf/subscribe [:messages])]
+     [:div
+       [:div [:div (str "HP: " (:hp player))]
+             [:div (str "AP: " (:ap player))]
+             [:div (str "Targeting? " (:target-mode? player))]
+             [:div (str "Target pos " (:target-pos player))]]
+       [:div
+          (for [m messages]
+            ^{:key (-> m :key str)} [:div (:message m)])]])])
 
 (sidebar)

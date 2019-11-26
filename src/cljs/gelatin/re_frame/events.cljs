@@ -16,7 +16,7 @@
 (rf/reg-event-db
   :player-ended-turn
   (fn [db _]
-    (->> [true db]
+    (->> [true (state/validate-db db)]
          entities/move-entities
          state/reset-player-turn
          second)))
