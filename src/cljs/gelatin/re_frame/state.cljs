@@ -31,6 +31,7 @@
 (def placeholder-ability-behavior
   {;; valid target type, #{:entity :player :terrain}
    :affects    :entity
+   :range      2
    ;; on-trigger tells us what to do to the targeted thing if one can be found.
    :on-trigger {:action #(update % :hp dec)}})
 
@@ -81,20 +82,22 @@
   []
   {:post [(s/assert ::player/player %)]}
   (let [p (random-player-pos)]
-    {:orientation  (cube/->orient 1 5 4)
-     :cube         {1 (:hunker abilities)
-                    2 (:regenerate abilities)
-                    3 (:twin abilities)
-                    4 (:snipe abilities)
-                    5 (:word abilities)
-                    6 (:slash abilities)}
-     ::p/passable? false
-     ::p/type      :player
-     :hp           3
-     :ap           2
-     :target-mode? false
-     :target-pos   p
-     ::p/pos       p}))
+    {:orientation      (cube/->orient 1 5 4)
+     :cube             {1 (:hunker abilities)
+                        2 (:regenerate abilities)
+                        3 (:twin abilities)
+                        4 (:snipe abilities)
+                        5 (:word abilities)
+                        6 (:slash abilities)}
+     ::p/passable?     false
+     ::p/opaque?       true
+     ::p/type          :player
+     :hp               3
+     :ap               2
+     :target-mode?     false
+     :targeted-squares nil
+     :target-pos       p
+     ::p/pos           p}))
 
 (defn reset-player-turn
   [[success? db]]

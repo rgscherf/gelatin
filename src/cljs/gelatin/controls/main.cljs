@@ -9,7 +9,10 @@
     [gelatin.controls.keys :as k]
     [gelatin.controls.movement :as movement]
     [cljs.spec.alpha :as s]
+    [gelatin.rot-js.fov :as fov]
+    [gelatin.rot-js.pathfinding :as pathfinding]
     [gelatin.re-frame.state :as game-state]))
+
 
 (defn set-replace
   "Replace a set item with another item."
@@ -39,14 +42,28 @@
   the new db based on chosen ability."
   [targeting? _ db]
   [true (if targeting?
-          (-> db
-              (assoc-in [:player :ap] 0)
-              (calculate-interaction-result
-                (get-in db [:player :target-pos])
-                (game-state/top-ability (:player db))))
+          ;; confirm an interaction
+          ;; first, check that the targeted square is within those threatened by
+          ;; the ability. if it is, trigger the ability and end player turn.
+          ;; else, do nothing!
+          (if (get (get-in db [:player :targeted-squares])
+                   (get-in db [:player :target-pos]))
+            (-> db
+                (assoc-in [:player :ap] 0)
+                (assoc-in [:player :targeted-squares] nil)
+                (calculate-interaction-result
+                  (get-in db [:player :target-pos])
+                  (game-state/top-ability (:player db))))
+            db)
+          ;; begin an interaction
           (-> db
               (assoc-in [:player :target-mode?] true)
-              (assoc-in [:player :target-pos] (get-in db [:player ::p/pos]))))])
+              (assoc-in [:player :targeted-squares]
+                        (fov/calculate-fov (pathfinding/db->collision-map db)
+                                           (get-in db [:player ::p/pos])
+                                           (-> db :player game-state/top-ability :range)))
+              (assoc-in [:player :target-pos] (get-in db
+                                                      [:player ::p/pos]))))])
 
 (defn execute-cancel
   [targeting? _ db]

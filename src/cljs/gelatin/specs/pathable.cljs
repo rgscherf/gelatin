@@ -3,8 +3,10 @@
 
 (s/def ::pathable (s/keys :req [::passable?
                                 ::pos
+                                ::opaque?
                                 ::type]))
 (s/def ::passable? boolean?)
+(s/def ::opaque? boolean?)
 (s/def ::type #{:player :entity :terrain})
 (s/def ::pos (s/coll-of integer? :kind vector? :count 2))
 (comment

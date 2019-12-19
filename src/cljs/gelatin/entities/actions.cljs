@@ -14,12 +14,13 @@
             [gelatin.specs.game-state :as state]
             [gelatin.specs.pathable :as p]))
 
-(defn simple-path-cb
-  [collision]
-  (fn [[x y]]
-    (let [tile      (get collision [x y])
-          passable? (::p/passable? tile)]
-      passable?)))
+;; moved to astar ns
+;(defn simple-path-cb
+;  [collision]
+;  (fn [[x y]]
+;    (let [tile      (get collision [x y])
+;          passable? (::p/passable? tile)]
+;      passable?)))
 
 (defn update-entity-set
   "Update the entity set, from an old entity."
@@ -64,7 +65,7 @@
           player    (:player db)
           {:keys [result path]} (astar/pathfind (::p/pos self)
                                                 (::p/pos player)
-                                                (simple-path-cb collision))]
+                                                (astar/simple-path-cb collision))]
       ;(println "finished pathfinding, returning" result)
       (match result
              :no-move [true db]

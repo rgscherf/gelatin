@@ -18,6 +18,7 @@
    ::r/animate?  false
    ::p/type      :terrain
    ::r/type      :stone
+   ::p/opaque?   :true
    ::p/passable? false})
 
 
@@ -32,31 +33,37 @@
                    ::r/animate?     true
                    ::r/tile-art-alt [1 1]
                    ::r/type         :water
+                   ::p/opaque?      false
                    ::r/image-url    "terrain.png"}
               "d" {:mapmaker-glyph "d"
                    ::p/passable?   true
                    ::r/type        :brick
+                   ::p/opaque?     true
                    ::r/tile-art    [7 2]
                    ::r/image-url   "terrain.png"}
               "." {:opacity        0.4
                    :mapmaker-glyph "."
                    ::r/type        :stone
+                   ::p/opaque?     false
                    ::p/passable?   true
                    ::r/tile-art    (random-of [10 0] [10 0] [10 0] [10 0] [10 0] [10 0] [10 0] [11 0] [12 0])
                    ::r/image-url   "terrain.png"}
               "#" {:mapmaker-glyph "#"
                    ::r/tile-art    (random-of [1 0] [2 0] [3 0] [4 0] [5 0] [6 0])
                    ::r/type        :brick
+                   ::p/opaque?     true
                    ::r/image-url   "terrain.png"}
               "b" {:mapmaker-glyph "b"
                    ::p/passable?   true
                    ::r/tile-art    [7 0]
                    ::r/type        :stone
+                   ::p/opaque?     false
                    ::r/image-url   "terrain.png"}
               "*" {:opacity         0.4
                    :mapmaker-glyph  "*"
                    ::r/tile-art     [2 1]
                    ::r/tile-art-alt [3 1]
                    ::r/type         :yellow
+                   ::p/opaque?      false
                    ::r/animate?     true
                    ::r/image-url    "terrain.png"}}))

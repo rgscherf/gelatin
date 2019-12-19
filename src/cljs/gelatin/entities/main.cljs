@@ -63,5 +63,6 @@
    ::r/tile-art-alt [1 5]
    ::r/type         :red
    ::p/passable?    false
+   ::p/opaque?      true
    ::p/pos          pos
    ::p/type         :entity})

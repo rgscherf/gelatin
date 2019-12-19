@@ -85,7 +85,6 @@
              [:div (str "Targeting? " (:target-mode? player))]
              [:div (str "Target pos " (:target-pos player))]]
        [:div
+        (reverse
           (for [m messages]
-            ^{:key (-> m :key str)} [:div (:message m)])]])])
-
-(sidebar)
+            ^{:key (-> m :key str)} [:div (:message m)]))]])])

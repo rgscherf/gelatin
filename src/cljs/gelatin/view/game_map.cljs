@@ -99,16 +99,53 @@
                                  ")")}}
      ""]))
 
+(defn entity-bottom-bar
+  [thing]
+  [:div {:style {:font-size       "2.5vmin"
+                 :z-index "10"
+                 :align-items     "baseline"
+                 :justify-content "space-around"
+                 :display         "flex"}}
+   [:div {:style {:margin-right "0.5vmin"}}
+    (:identifier thing)]
+   [:div {:style {:position "relative"
+                  :width "2vmin"
+                  :height "1vmin"}}
+    [:div {:style {:position "absolute"
+                   :width "100%"
+                   :height "100%"
+                   :background-color "red"}}]
+    [:div {:style {:position "absolute"
+                   :height "100%"
+                   :width (str (* 100 (/ (:hp thing) 3)) "%")
+                   :background-color "green"}}]]])
+
+(defn draw-entity
+  [thing]
+  [:div {:style {:display         "flex"
+                 :height          "100%"
+                 :width           "100%"
+                 :justify-content "center"
+                 :align-items     "center"
+                 :flex-direction  "column"}}
+   [:div {:style {:position "relative"
+                  :width    "95%"
+                  :height   "62.7%"}}
+    [draw-renderable thing]]
+   [entity-bottom-bar thing]])
+
+
+
 (defn draw-player
   []
   (let [current-cube @(rf/subscribe [:cube])
         player       @(rf/subscribe [:player])]
-    [:div {:style {:display        "flex"
-                   :height         "100%"
-                   :width          "100%"
+    [:div {:style {:display         "flex"
+                   :height          "100%"
+                   :width           "100%"
                    :justify-content "center"
-                   :align-items "center"
-                   :flex-direction "column"}}
+                   :align-items     "center"
+                   :flex-direction  "column"}}
      [:div {:style {:position      "relative"
                     :width         "95%"
                     :border        "1px solid white"
@@ -116,9 +153,9 @@
                     :height        "62.7%"}}
       [draw-renderable (get current-cube
                             (:t @(rf/subscribe [:player-orientation])))]]
-     #_[:div
-        {:style {:font-size "1.7vmin"}}
-        (str "HP " (:hp player))]]))
+     [:div
+      {:style {:font-size "1.7vmin"}}
+      (str "HP " (:hp player))]]))
 
 (defn single-tile
   [[y x]]
@@ -139,15 +176,19 @@
                     :align-items     "center"
                     :justify-content "center"
                     :position        "relative"
-                    :outline (if (and (:target-mode? player)
-                                      (= [x y] (:target-pos player)))
-                                "dashed red 3px"
-                                nil)
+                    :outline         (if (:target-mode? player)
+                                       (cond (= [x y] (:target-pos player))
+                                             "dashed red 3px"
+                                             (let [targets (:targeted-squares player)]
+                                                  (and targets
+                                                       (get targets [x y])))
+                                             "dashed green 1px"
+                                             :else nil))
                     :width           "100%"}}
       [draw-renderable terrain-tile]
       (match (::p/type (get collision [x y]))
              :player [draw-player]
-             :entity [draw-renderable (get collision [x y])]
+             :entity [draw-entity (get collision [x y])]
              :else nil)]]))
 
 (defn play-area

@@ -1,5 +1,6 @@
 (ns gelatin.rot-js.astar
   (:require [tailrecursion.priority-map :as priority]
+            [gelatin.specs.pathable :as p]
             [cljs.spec.alpha :as s]))
 
 (s/def ::pathfinding-result (s/keys :req-un [::result ::path]))
@@ -80,6 +81,13 @@
         (reverse path)
         (recur prev-node (conj path prev-node))))))
 
+
+(defn simple-path-cb
+  [collision]
+  (fn [[x y]]
+    (let [tile      (get collision [x y])
+          passable? (::p/passable? tile)]
+      passable?)))
 
 (defn pathfind
   "For a given start and end node,
