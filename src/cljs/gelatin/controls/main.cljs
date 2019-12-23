@@ -11,7 +11,7 @@
     [cljs.spec.alpha :as s]
     [gelatin.rot-js.fov :as fov]
     [gelatin.rot-js.pathfinding :as pathfinding]
-    [gelatin.re-frame.state :as game-state]))
+    [gelatin.cube.abilities :as abilities]))
 
 
 (defn set-replace
@@ -53,7 +53,7 @@
                 (assoc-in [:player :targeted-squares] nil)
                 (calculate-interaction-result
                   (get-in db [:player :target-pos])
-                  (game-state/top-ability (:player db))))
+                  (abilities/top-ability (:player db))))
             db)
           ;; begin an interaction
           (-> db
@@ -61,7 +61,7 @@
               (assoc-in [:player :targeted-squares]
                         (fov/calculate-fov (pathfinding/db->collision-map db)
                                            (get-in db [:player ::p/pos])
-                                           (-> db :player game-state/top-ability :range)))
+                                           (-> db :player abilities/top-ability :range)))
               (assoc-in [:player :target-pos] (get-in db
                                                       [:player ::p/pos]))))])
 

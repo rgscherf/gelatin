@@ -12,6 +12,7 @@
     [gelatin.specs.game-state :as state]
     [gelatin.specs.player :as player]
     [gelatin.specs.game-state :as game]
+    [gelatin.cube.abilities :refer [abilities]]
     [gelatin.maps.main :as map-loader]))
 
 
@@ -28,66 +29,17 @@
   [(rng/random-item [-1])                                   ;; x
    (rng/random-item [4 5])])                                ;; y
 
-(def placeholder-ability-behavior
-  {;; valid target type, #{:entity :player :terrain}
-   :affects    :entity
-   :range      2
-   ;; on-trigger tells us what to do to the targeted thing if one can be found.
-   :on-trigger {:action #(update % :hp dec)}})
-
-(defn mk-ability
-  [ability]
-  {:post [(s/assert ::r/renderable %)]}
-  (merge {::r/image-url "Interface_Skills_B.png"
-          ::r/type      :green
-          ::r/animate?  false
-          :opacity      1}
-         placeholder-ability-behavior
-         ability))
-
-(def abilities
-  {:hunker     (mk-ability {::r/tile-art [1 5]
-                            :name        "Hunker"})
-   :regenerate (mk-ability {::r/tile-art [2 5]
-                            :name        "Regenerate"})
-   :twin       (mk-ability {::r/tile-art [4 2]
-                            :name        "TwinShot"})
-   :snipe      (mk-ability {::r/tile-art [3 2]
-                            :name        "Snipe"})
-   :word       (mk-ability {::r/tile-art [0 1]
-                            :name        "HolyWord"})
-   :slash      (mk-ability {::r/tile-art [0 0]
-                            :name        "Slash"})})
-
-{:range      2                                              ;; valid range
- :affects    :entity                                        ;; valid target type, #{:entity :player :terrain}
- ;; on-trigger tells us what to do to the targeted thing if one can be found.
- :on-trigger {:action #(update % :hp dec)}}
-
-;; when an action is triggered, take the chosen coords
-;; and try to find a matching "thing" based on the :affects entry.
-;; e.g. for :affects :entity, search for an entity at the chosen position
-;; and apply the :action from the :on-trigger key to it.
-;; for :affects :player, just go directly to the player.
-;; the :action key will always return a new "thing", which can be validated
-;; and then put back.
-;; TODO: is it smart for an ability to directly change a "thing"? what about e.g. damage resistance?
-
-(defn top-ability
-  [player]
-  (get (:cube player)
-       (get (:orientation player) :t)))
 
 (defn init-player
   []
   {:post [(s/assert ::player/player %)]}
   (let [p (random-player-pos)]
     {:orientation      (cube/->orient 1 5 4)
-     :cube             {1 (:hunker abilities)
-                        2 (:regenerate abilities)
-                        3 (:twin abilities)
+     :cube             {1 (:snipe abilities)
+                        2 (:snipe abilities)
+                        3 (:snipe abilities)
                         4 (:snipe abilities)
-                        5 (:word abilities)
+                        5 (:slash abilities)
                         6 (:slash abilities)}
      ::p/passable?     false
      ::p/opaque?       true
