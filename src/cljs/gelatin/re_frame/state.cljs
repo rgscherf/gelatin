@@ -35,16 +35,18 @@
   {:post [(s/assert ::player/player %)]}
   (let [p (random-player-pos)]
     {:orientation      (cube/->orient 1 5 4)
-     :cube             {1 (:snipe abilities)
+     :cube             {1 (:slash abilities)
                         2 (:snipe abilities)
                         3 (:snipe abilities)
                         4 (:snipe abilities)
-                        5 (:slash abilities)
+                        5 (:snipe abilities)
                         6 (:slash abilities)}
      ::p/passable?     false
      ::p/opaque?       true
      ::p/type          :player
+     :max-hp           5
      :hp               3
+     :max-ap           2
      :ap               2
      :target-mode?     false
      :targeted-squares nil

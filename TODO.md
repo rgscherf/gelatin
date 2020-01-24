@@ -2,8 +2,7 @@
 
 # High Priority
 
-- Add ability: melee swipe
-- Add ability: ranged shot
+- Add cube movement preview on floor
 
 # Med Priority
 

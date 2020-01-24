@@ -75,7 +75,7 @@
 (defn draw-renderable
   "Draw a renderable tile. Handles animating between normal and alt art."
   [thing]
-  (let [show-alt?     @(rf/subscribe [:show-alt?])
+  (let [show-alt?     false #_@(rf/subscribe [:show-alt?])
         animate?      (::renderable/animate? thing)
         art           (::renderable/tile-art thing)
         alt           (::renderable/tile-art-alt thing)

@@ -14,7 +14,7 @@
   [ability]
   {:post [(s/assert ::r/renderable %)]}
   (merge {::r/image-url "Interface_Skills_B.png"
-          ::r/type      :green
+          ::r/type      :white
           ::r/animate?  false
           :opacity      1}
          ability))
