@@ -49,6 +49,7 @@
      :max-ap           2
      :ap               2
      :target-mode?     false
+     :face-previews    {}
      :targeted-squares nil
      :target-pos       p
      ::p/pos           p}))

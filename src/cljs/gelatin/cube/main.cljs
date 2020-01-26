@@ -22,6 +22,7 @@
   "
   (:require
     [clojure.core.match :refer [match]]
+    [re-frame.db :refer [app-db]]
     [cljs.spec.alpha :as s]))
 
 

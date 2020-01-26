@@ -1,6 +1,8 @@
 (ns gelatin.view.game-map
   (:require
     [gelatin.style.main :as style]
+    [cljs.core.match :refer [match]]
+    [gelatin.cube.main :as cube-ops]
     [gelatin.specs.renderable :as renderable]
     [cljs.core.match :refer-macros [match]]
     [gelatin.specs.pathable :as p]
@@ -102,22 +104,22 @@
 (defn entity-bottom-bar
   [thing]
   [:div {:style {:font-size       "2.5vmin"
-                 :z-index "10"
+                 :z-index         "10"
                  :align-items     "baseline"
                  :justify-content "space-around"
                  :display         "flex"}}
    [:div {:style {:margin-right "0.5vmin"}}
     (:identifier thing)]
    [:div {:style {:position "relative"
-                  :width "2vmin"
-                  :height "1vmin"}}
-    [:div {:style {:position "absolute"
-                   :width "100%"
-                   :height "100%"
+                  :width    "2vmin"
+                  :height   "1vmin"}}
+    [:div {:style {:position         "absolute"
+                   :width            "100%"
+                   :height           "100%"
                    :background-color "red"}}]
-    [:div {:style {:position "absolute"
-                   :height "100%"
-                   :width (str (* 100 (/ (:hp thing) 3)) "%")
+    [:div {:style {:position         "absolute"
+                   :height           "100%"
+                   :width            (str (* 100 (/ (:hp thing) 3)) "%")
                    :background-color "green"}}]]])
 
 (defn draw-entity
@@ -134,6 +136,33 @@
     [draw-renderable thing]]
    [entity-bottom-bar thing]])
 
+(defn draw-tile-preview?
+  [tile-pos player]
+  (contains? (get player :face-previews) tile-pos))
+
+(defn preview-overlay
+  [m]
+  {:style (merge {:position :absolute}
+                 m)})
+
+(defn draw-tile-preview
+  [tile-pos player]
+  [:div {:style {:position "relative"
+                 :height   "100%"
+                 :font-size "0.5rem"
+                 :width    "100%"}}
+   (for [preview (get-in player [:face-previews tile-pos])]
+     (if (:accessible? preview)
+       (let [tile-face (:face preview)
+             tile-name (-> player :cube (get tile-face) :name)
+             short-name (apply str (take 2 tile-name))]
+         (match (:type preview)
+                :single [:div (preview-overlay {:top "50%" :left "50%" :font-size "1rem"}) short-name]
+                :from-south [:div (preview-overlay {:bottom "0%" :left "50%"}) short-name]
+                :from-north [:div (preview-overlay {:top "0%" :left "50%"}) short-name]
+                :from-east [:div (preview-overlay {:right "0%" :top "50%"}) short-name]
+                :from-west [:div (preview-overlay {:left "0%" :top "50%"}) short-name]
+                :else [:div ""]))))])
 
 
 (defn draw-player
@@ -153,9 +182,9 @@
                     :height        "62.7%"}}
       [draw-renderable (get current-cube
                             (:t @(rf/subscribe [:player-orientation])))]]
-     [:div
-      {:style {:font-size "1.7vmin"}}
-      (str "HP " (:hp player))]]))
+     #_[:div
+        {:style {:font-size "1.7vmin"}}
+        (str "HP " (:hp player))]]))
 
 (defn single-tile
   [[y x]]
@@ -163,6 +192,7 @@
   (let [current-map  @(rf/subscribe [:current-map])
         entities     @(rf/subscribe [:entities])
         player       @(rf/subscribe [:player])
+        cube         @(rf/subscribe [:cube])
         terrain-tile (get current-map [x y])
         collision    (pathfinding/collision-map player entities current-map)]
     [:div {:style {:max-height       "100%"
@@ -180,8 +210,8 @@
                                        (cond (= [x y] (:target-pos player))
                                              "dashed red 3px"
                                              (let [targets (:targeted-squares player)]
-                                                  (and targets
-                                                       (get targets [x y])))
+                                               (and targets
+                                                    (get targets [x y])))
                                              "dashed green 1px"
                                              :else nil))
                     :width           "100%"}}
@@ -189,8 +219,15 @@
       (match (::p/type (get collision [x y]))
              :player [draw-player]
              :entity [draw-entity (get collision [x y])]
-             :else nil)]]))
+             :else (if (draw-tile-preview? [x y] player)
+                     [draw-tile-preview [x y] player]))]]))
 
+(comment
+  (let [db @re-frame.db/app-db]
+    (-> db :player :face-previews))
+  (contains? {:hello :world :bye :butt} :butt))
+
+;;[:div (:name (get cube (get player :face-previews)))]
 (defn play-area
   []
   (let [map-size @(rf/subscribe [:viewport])]
