@@ -164,7 +164,6 @@
   (let [current-map  @(rf/subscribe [:current-map])
         entities     @(rf/subscribe [:entities])
         player       @(rf/subscribe [:player])
-        cube         @(rf/subscribe [:cube])
         terrain-tile (get current-map [x y])
         collision    (pathfinding/collision-map player entities current-map)]
     [:div {:style {:max-height       "100%"

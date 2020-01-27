@@ -6,16 +6,10 @@
     [cljs.spec.alpha :as spec]
     [gelatin.view.main :as main-view]
     [gelatin.re-frame.events]
-    [gelatin.re-frame.subs]
-    [gelatin.re-frame.state :as game-state]))
+    [gelatin.re-frame.subs]))
 
 (spec/check-asserts true)
 (set! spec/*explain-out* expound/printer)
-
-(rf/reg-event-db
-  :init-game
-  (fn [_]
-    (game-state/init-game-state)))
 
 (defonce add-key-listener? (r/atom true))
 

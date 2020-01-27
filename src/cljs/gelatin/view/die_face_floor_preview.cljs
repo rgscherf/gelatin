@@ -20,21 +20,34 @@
      (if (:accessible? preview)
        (let [tile-face  (:face preview)
              tile-name  (-> player :cube (get tile-face) :name)
+             html-key (str tile-pos "-" tile-face "-" tile-name)
              short-name (apply str (take 2 tile-name))]
          (match (:type preview)
-                :single [:div
-                         (preview-overlay-style {:top "50%" :left "50%" :font-size "1rem"})
-                         short-name]
-                :from-south [:div
-                             (preview-overlay-style {:bottom "0%" :left "50%"})
-                             short-name]
-                :from-north [:div
-                             (preview-overlay-style {:top "0%" :left "50%"})
-                             short-name]
-                :from-east [:div
-                            (preview-overlay-style {:right "0%" :top "50%"})
-                            short-name]
-                :from-west [:div
-                            (preview-overlay-style {:left "0%" :top "50%"})
-                            short-name]
-                :else [:div ""]))))])
+                :single
+                ^{:key html-key}
+                [:div
+                 (preview-overlay-style {:top "50%" :left "50%" :font-size "1rem"})
+                 short-name]
+                :from-south
+                ^{:key html-key}
+                [:div
+                 (preview-overlay-style {:bottom "0%" :left "50%"})
+                 short-name]
+                :from-north
+                ^{:key html-key}
+                [:div
+                 (preview-overlay-style {:top "0%" :left "50%"})
+                 short-name]
+                :from-east
+                ^{:key html-key}
+                [:div
+                 (preview-overlay-style {:right "0%" :top "50%"})
+                 short-name]
+                :from-west
+                ^{:key html-key}
+                [:div
+                 (preview-overlay-style {:left "0%" :top "50%"})
+                 short-name]
+                :else
+                ^{:key html-key}
+                [:div ""]))))])

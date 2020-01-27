@@ -40,116 +40,91 @@
 (defn tile-previews
   "From a given player position, what are [pos] -> int-top-face
   mappings for the tiles that can be reached in one move?"
-  [[x y] new-orientation db]
-  (let [north       [x (dec y)]
-        north-north [x (-> y dec dec)]
-        south       [x (inc y)]
-        south-south [x (-> y inc inc)]
-        east        [(inc x) y]
-        east-east   [(-> x inc inc) y]
-        west        [(dec x) y]
-        west-west   [(-> x dec dec) y]
-        north-east  [(inc x) (dec y)]
-        south-east  [(inc x) (inc y)]
-        north-west  [(dec x) (dec y)]
-        south-west  [(dec x) (inc y)]]
-    {north       [{:type        :single
-                   :accessible? (tile-free-for-player? db north)
-                   :face        (:t (cube/roll new-orientation :north))}]
-     north-north [{:type        :from-south
-                   :accessible? (and (tile-free-for-player? db north)
-                                     (tile-free-for-player? db north-north))
-                   :face        (-> new-orientation (cube/roll :north) (cube/roll :north) :t)}]
-     south       [{:type        :single
-                   :accessible? (tile-free-for-player? db south)
-                   :face        (:t (cube/roll new-orientation :south))}]
-     south-south [{:type        :from-north
-                   :accessible? (and (tile-free-for-player? db south)
-                                     (tile-free-for-player? db south-south))
-                   :face        (-> new-orientation (cube/roll :south) (cube/roll :south) :t)}]
-     east        [{:type        :single
-                   :accessible? (tile-free-for-player? db east)
-                   :face        (:t (cube/roll new-orientation :east))}]
-     east-east   [{:type        :from-west
-                   :accessible? (and (tile-free-for-player? db east)
-                                     (tile-free-for-player? db east-east))
-                   :face        (-> new-orientation (cube/roll :east) (cube/roll :east) :t)}]
-     west        [{:type        :single
-                   :accessible? (tile-free-for-player? db west)
-                   :face        (:t (cube/roll new-orientation :west))}]
-     west-west   [{:type        :from-east
-                   :accessible? (and (tile-free-for-player? db west)
-                                     (tile-free-for-player? db west-west))
-                   :face        (-> new-orientation (cube/roll :west) (cube/roll :west) :t)}]
-     north-east  [{:type        :from-west
-                   :accessible? (and (tile-free-for-player? db north)
-                                     (tile-free-for-player? db north-east))
-                   :face        (-> new-orientation (cube/roll :north) (cube/roll :east) :t)}
-                  {:type        :from-south
-                   :accessible? (and (tile-free-for-player? db east)
-                                     (tile-free-for-player? db north-east))
-                   :face        (-> new-orientation (cube/roll :east) (cube/roll :north) :t)}]
-     south-east  [{:type        :from-north
-                   :accessible? (and (tile-free-for-player? db east)
-                                     (tile-free-for-player? db south-east))
-                   :face        (-> new-orientation (cube/roll :east) (cube/roll :south) :t)}
-                  {:type        :from-west
-                   :accessible? (and (tile-free-for-player? db south)
-                                     (tile-free-for-player? db south-east))
-                   :face        (-> new-orientation (cube/roll :south) (cube/roll :east) :t)}]
-     north-west  [{:type        :from-east
-                   :accessible? (and (tile-free-for-player? db north)
-                                     (tile-free-for-player? db north-west))
-                   :face        (-> new-orientation (cube/roll :north) (cube/roll :west) :t)}
-                  {:type        :from-south
-                   :accessible? (and (tile-free-for-player? db west)
-                                     (tile-free-for-player? db north-west))
-                   :face        (-> new-orientation (cube/roll :west) (cube/roll :north) :t)}]
-     south-west  [{:type        :from-east
-                   :accessible? (and (tile-free-for-player? db south)
-                                     (tile-free-for-player? db south-west))
-                   :face        (-> new-orientation (cube/roll :south) (cube/roll :west) :t)}
-                  {:type        :from-north
-                   :accessible? (and (tile-free-for-player? db west)
-                                     (tile-free-for-player? db south-west))
-                   :face        (-> new-orientation (cube/roll :west) (cube/roll :south) :t)}]}))
+  [[x y] new-orientation ap db]
+  (let [north            [x (dec y)]
+        north-north      [x (-> y dec dec)]
+        south            [x (inc y)]
+        south-south      [x (-> y inc inc)]
+        east             [(inc x) y]
+        east-east        [(-> x inc inc) y]
+        west             [(dec x) y]
+        west-west        [(-> x dec dec) y]
+        north-east       [(inc x) (dec y)]
+        south-east       [(inc x) (inc y)]
+        north-west       [(dec x) (dec y)]
+        south-west       [(dec x) (inc y)]
+        single-cardinals {north [{:type        :single
+                                  :accessible? (tile-free-for-player? db north)
+                                  :face        (:t (cube/roll new-orientation :north))}]
+                          south [{:type        :single
+                                  :accessible? (tile-free-for-player? db south)
+                                  :face        (:t (cube/roll new-orientation :south))}]
+                          east  [{:type        :single
+                                  :accessible? (tile-free-for-player? db east)
+                                  :face        (:t (cube/roll new-orientation :east))}]
+                          west  [{:type        :single
+                                  :accessible? (tile-free-for-player? db west)
+                                  :face        (:t (cube/roll new-orientation :west))}]}
 
-
-;#_(let [pos-dir [(let [pos [nx (dec ny)]]
-;                   {:pos pos [{:type :single
-;                               :accessible? (tile-free-for-player? db pos)
-;                               :orientation (:t (cube/roll new-orientation :north))}]})
-;                 {:pos [nx (dec (dec ny))]
-;                  :type :single-end
-;                  :orientation (-> new-orientation (cube/roll :north) (cube/roll :north))}
-;                 {:pos [nx (inc ny)]
-;                  :type :single
-;                  :orientation (cube/roll new-orientation :south)}
-;                 {:pos [nx (inc (inc ny))]
-;                  :type :single-end
-;                  :orientation (-> new-orientation (cube/roll :south) (cube/roll :south))}
-;                 {:pos [(inc nx) ny]
-;                  :type :single
-;                  :orientation (cube/roll new-orientation :east)}
-;                 {:pos [(inc (inc nx)) ny]
-;                  :type :single-end
-;                  :orientation (-> new-orientation (cube/roll :east) (cube/roll :east))}
-;                 {:pos [(dec nx) ny]
-;                  :type :single
-;                  :orientation (cube/roll new-orientation :west)}
-;                 {:pos [(dec (dec nx)) ny]
-;                  :type :single-end
-;                  :orientation (-> new-orientation (cube/roll :west) (cube/roll :west))}]])
-
-
-#_(apply merge
-         (for [{:keys [pos orientation] :as preview} pos-dir
-               :when (tile-free-for-player? db pos)]
-           {pos (-> preview
-                    (assoc :face (:t orientation))
-                    (dissoc :orientation :pos))}))
-
-
+        double-moves     {west-west   [{:type        :from-east
+                                        :accessible? (and (tile-free-for-player? db west)
+                                                          (tile-free-for-player? db west-west))
+                                        :face        (-> new-orientation (cube/roll :west) (cube/roll :west) :t)}]
+                          north-north [{:type        :from-south
+                                        :accessible? (and (tile-free-for-player? db north)
+                                                          (tile-free-for-player? db north-north))
+                                        :face        (-> new-orientation (cube/roll :north) (cube/roll :north) :t)}]
+                          south-south [{:type        :from-north
+                                        :accessible? (and (tile-free-for-player? db south)
+                                                          (tile-free-for-player? db south-south))
+                                        :face        (-> new-orientation (cube/roll :south) (cube/roll :south) :t)}]
+                          east-east   [{:type        :from-west
+                                        :accessible? (and (tile-free-for-player? db east)
+                                                          (tile-free-for-player? db east-east))
+                                        :face        (-> new-orientation (cube/roll :east) (cube/roll :east) :t)}]
+                          north-east  [{:type        :from-west
+                                        :accessible? (and (tile-free-for-player? db north)
+                                                          (tile-free-for-player? db north-east))
+                                        :face        (-> new-orientation (cube/roll :north) (cube/roll :east) :t)}
+                                       {:type        :from-south
+                                        :accessible? (and (tile-free-for-player? db east)
+                                                          (tile-free-for-player? db north-east))
+                                        :face        (-> new-orientation (cube/roll :east) (cube/roll :north) :t)}]
+                          south-east  [{:type        :from-north
+                                        :accessible? (and (tile-free-for-player? db east)
+                                                          (tile-free-for-player? db south-east))
+                                        :face        (-> new-orientation (cube/roll :east) (cube/roll :south) :t)}
+                                       {:type        :from-west
+                                        :accessible? (and (tile-free-for-player? db south)
+                                                          (tile-free-for-player? db south-east))
+                                        :face        (-> new-orientation (cube/roll :south) (cube/roll :east) :t)}]
+                          north-west  [{:type        :from-east
+                                        :accessible? (and (tile-free-for-player? db north)
+                                                          (tile-free-for-player? db north-west))
+                                        :face        (-> new-orientation (cube/roll :north) (cube/roll :west) :t)}
+                                       {:type        :from-south
+                                        :accessible? (and (tile-free-for-player? db west)
+                                                          (tile-free-for-player? db north-west))
+                                        :face        (-> new-orientation (cube/roll :west) (cube/roll :north) :t)}]
+                          south-west  [{:type        :from-east
+                                        :accessible? (and (tile-free-for-player? db south)
+                                                          (tile-free-for-player? db south-west))
+                                        :face        (-> new-orientation (cube/roll :south) (cube/roll :west) :t)}
+                                       {:type        :from-north
+                                        :accessible? (and (tile-free-for-player? db west)
+                                                          (tile-free-for-player? db south-west))
+                                        :face        (-> new-orientation (cube/roll :west) (cube/roll :south) :t)}]}]
+    (cond (= ap 2)
+          (merge single-cardinals
+                 double-moves)
+          (= ap 1)
+          (-> single-cardinals
+              (assoc-in [north 0 :type] :from-south)
+              (assoc-in [south 0 :type] :from-north)
+              (assoc-in [west 0 :type] :from-east)
+              (assoc-in [east 0 :type] :from-west))
+          (= ap 0)
+          {})))
 
 (defn execute-movement
   "Move the player in a given direction, if able.
@@ -165,9 +140,6 @@
       [true (-> db
                 (assoc-in [:player ::p/pos] candidate-move)
                 (assoc-in [:player :orientation] candidate-orientation)
-                (assoc-in [:player :face-previews] (tile-previews candidate-move
-                                                                  candidate-orientation
-                                                                  db))
                 (update-in [:player :ap] dec))]
       [false db])))
 
