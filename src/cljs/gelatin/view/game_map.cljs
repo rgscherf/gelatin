@@ -138,25 +138,30 @@
 
 
 (defn draw-player
-  []
-  (let [current-cube @(rf/subscribe [:cube])
-        player       @(rf/subscribe [:player])]
-    [:div {:style {:display         "flex"
-                   :height          "100%"
-                   :width           "100%"
-                   :justify-content "center"
-                   :align-items     "center"
-                   :flex-direction  "column"}}
-     [:div {:style {:position      "relative"
-                    :width         "95%"
-                    :border        "1px solid white"
-                    :border-radius "0.25rem"
-                    :height        "62.7%"}}
-      [draw-renderable (get current-cube
-                            (:t @(rf/subscribe [:player-orientation])))]]
-     #_[:div
-        {:style {:font-size "1.7vmin"}}
-        (str "HP " (:hp player))]]))
+  ([]
+   (let [current-cube @(rf/subscribe [:cube])
+         orientation  (:t @(rf/subscribe [:player-orientation]))]
+     (draw-player (get current-cube orientation)
+                  {:style {:background "black"}})))
+  ([top-ability]
+   (draw-player top-ability {}))
+  ([top-ability attribs]
+   [:div {:style {:display         "flex"
+                  :height          "100%"
+                  :width           "100%"
+                  :justify-content "center"
+                  :align-items     "center"
+                  :flex-direction  "column"}}
+    [:div (merge-with merge
+                      attribs
+                      {:style {:position      "relative"
+                               :width         "95%"
+                               :border        "1px solid white"
+                               :border-radius "0.25rem"
+                               :height        "62.7%"}})
+     [draw-renderable top-ability]]]))
+
+
 
 (defn single-tile
   [[y x]]
@@ -191,7 +196,7 @@
              :player [draw-player]
              :entity [draw-entity (get collision [x y])]
              :else (if (face-preview/show-face-preview? [x y] player)
-                     [face-preview/draw-face-preview [x y] player]))]]))
+                     [face-preview/draw-face-preview [x y] player draw-player]))]]))
 
 (comment
   (let [db @re-frame.db/app-db]

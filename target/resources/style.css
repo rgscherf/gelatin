@@ -2,14 +2,16 @@ html {
     font-family: "Courier New", monospace;
     font-size: 2vmin;
 }
+
 fieldset {
     border-width: 1px;
 }
 
 .pill-pulse {
     animation-name: pulse;
-    animation-duration: 1s;
-    animation-iteration-count:infinite;
+    animation-duration: 0.5s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
 }
 
 @keyframes pulse {
@@ -17,6 +19,6 @@ fieldset {
         opacity: 1;
     }
     to {
-        opacity:0.8;
+        opacity: 0.5;
     }
 }

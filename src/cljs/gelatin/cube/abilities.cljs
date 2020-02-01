@@ -24,7 +24,7 @@
    :name        "Slash"
    :affects     :entity
    :range       1
-   :on-trigger  {:action #(update % :hp (fn [x] (- x 2)))}})
+   :on-trigger  {:action #(update % :hp (fn [x] (- x 3)))}})
 
 (def ability-bowshot
   {::r/tile-art [3 2]

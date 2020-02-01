@@ -44,8 +44,8 @@
      ::p/passable?     false
      ::p/opaque?       true
      ::p/type          :player
-     :max-hp           5
-     :hp               3
+     :max-hp           10
+     :hp               7
      :max-ap           2
      :ap               2
      :target-mode?     false
